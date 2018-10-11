@@ -65,13 +65,13 @@ macro(CHECK_CXX_COMPILER_AND_LINKER_FLAGS _RESULT _CXX_FLAGS _LINKER_FLAGS)
 endmacro()
 
 # Compile GLFW
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
-set(GLFW_USE_CHDIR OFF CACHE BOOL " " FORCE)
-set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " ")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL " ")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL " ")
+set(GLFW_BUILD_INSTALL OFF CACHE BOOL " ")
+set(GLFW_INSTALL OFF CACHE BOOL " ")
+set(GLFW_USE_CHDIR OFF CACHE BOOL " ")
+set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " ")
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # Quench annoying deprecation warnings when compiling GLFW on OSX
@@ -308,7 +308,7 @@ endif()
 add_definitions(${NANOGUI_EXTRA_DEFS})
 
 # Compile main NanoGUI library
-add_library(nanogui-obj OBJECT
+add_library(nanogui_objects OBJECT
   # Merge NanoVG into the NanoGUI library
   ext/nanovg/src/nanovg.c
   # Merge GLAD into the NanoGUI library (only if needed)
@@ -362,25 +362,25 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
   file(WRITE ${XCODE_DUMMY} "")
   add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
     ${XCODE_DUMMY}
-    $<TARGET_OBJECTS:nanogui-obj>
+    $<TARGET_OBJECTS:nanogui_objects>
     $<TARGET_OBJECTS:glfw_objects>
   )
 else()
   add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
-    $<TARGET_OBJECTS:nanogui-obj>
+    $<TARGET_OBJECTS:nanogui_objects>
     $<TARGET_OBJECTS:glfw_objects>
   )
 endif()
 
 if (NANOGUI_BUILD_SHARED)
-  set_property(TARGET nanogui-obj PROPERTY POSITION_INDEPENDENT_CODE ON)
+  set_property(TARGET nanogui_objects PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif()
 
 # Compile/link flags for NanoGUI
-set_property(TARGET nanogui-obj APPEND PROPERTY COMPILE_DEFINITIONS "NANOGUI_BUILD;NVG_BUILD")
+set_property(TARGET nanogui_objects APPEND PROPERTY COMPILE_DEFINITIONS "NANOGUI_BUILD;NVG_BUILD")
 
 if (NANOGUI_USE_GLAD AND NANOGUI_BUILD_SHARED)
-  set_property(TARGET nanogui-obj APPEND PROPERTY COMPILE_DEFINITIONS
+  set_property(TARGET nanogui_objects APPEND PROPERTY COMPILE_DEFINITIONS
     "GLAD_GLAPI_EXPORT;GLAD_GLAPI_EXPORT_BUILD")
 endif()
 
@@ -399,7 +399,7 @@ endif()
 
 if (NANOGUI_BUILD_SHARED)
   # When GLFW is merged into the NanoGUI library, this flag must be specified
-  set_property(TARGET nanogui-obj APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL;NVG_SHARED")
+  set_property(TARGET nanogui_objects APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL;NVG_SHARED")
 endif()
 
 if (NANOGUI_BUILD_SHARED AND NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEB)
@@ -446,7 +446,7 @@ if (NANOGUI_BUILD_PYTHON)
   find_package(PythonLibsNew ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
-    set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
+    set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?")
     message(WARNING "NanoGUI: not building the Python plugin!")
   else()
     message(STATUS "NanoGUI: building the Python plugin.")
@@ -455,7 +455,7 @@ endif()
 
 if (NANOGUI_BUILD_PYTHON)
   # Need PIC code in libnanogui even when compiled as a static library
-  set_target_properties(nanogui-obj PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(nanogui_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
   set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
