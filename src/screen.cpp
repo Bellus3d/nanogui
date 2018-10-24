@@ -396,6 +396,36 @@ void Screen::setSize(const Vector2i &size) {
 #endif
 }
 
+void Screen::setSizeLimits(const Vector2i& min, const Vector2i& max)
+{
+#if defined(_WIN32) || defined(__linux__)
+  glfwSetWindowSizeLimits(
+    mGLFWWindow,
+    (min.x() ? (min.x() * mPixelRatio) : GLFW_DONT_CARE),
+    (min.y() ? (min.y() * mPixelRatio) : GLFW_DONT_CARE),
+    (max.x() ? (max.x() * mPixelRatio) : GLFW_DONT_CARE),
+    (max.y() ? (max.y() * mPixelRatio) : GLFW_DONT_CARE)
+  );
+#else
+  glfwSetWindowSizeLimits(
+    mGLFWWindow,
+    (min.x() ? min.x() : GLFW_DONT_CARE),
+    (min.y() ? min.y() : GLFW_DONT_CARE),
+    (max.x() ? max.x() : GLFW_DONT_CARE),
+    (max.y() ? max.y() : GLFW_DONT_CARE)
+  );
+#endif
+}
+
+void Screen::setAspectRatio(int numerator, int denominator)
+{
+  glfwSetWindowAspectRatio(
+    mGLFWWindow,
+    (numerator ? numerator : GLFW_DONT_CARE),
+    (denominator ? denominator : GLFW_DONT_CARE)
+  );
+}
+
 void Screen::drawAll() {
     glClearColor(mBackground[0], mBackground[1], mBackground[2], mBackground[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

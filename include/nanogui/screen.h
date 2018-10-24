@@ -104,6 +104,20 @@ public:
     /// Set window size
     void setSize(const Vector2i& size);
 
+    //! This function sets the window size limits.
+    //! The size limits are applied immediately to a windowed mode window and may cause it to be resized.
+    //! If the window is full screen, the size limits only take effect once it is made windowed.
+    //! The maximum dimensions must be greater than or equal to the minimum dimensions.
+    //! Setting dimensions equal to zero will disable the size limit.
+    virtual void setSizeLimits(const Vector2i& min, const Vector2i& max);
+
+    //! This function sets the window aspect ratio.
+    //! The aspect ratio is applied immediately to a windowed mode window and may cause it to be resized.
+    //! If the window is full screen, the aspect ratio only takes effect once it is made windowed.
+    //! The aspect ratio is specified as a numerator and a denominator.
+    //! If the numerator and denominator is set to zero then the aspect ratio limit is disabled.
+    virtual void setAspectRatio(int numerator, int denominator);
+
     /// Draw the Screen contents
     virtual void drawAll();
 
