@@ -90,7 +90,7 @@ int main(int /* argc */, char ** /* argv */) {
 
     // Create a nanogui screen and pass the glfw pointer to initialize
     screen = new Screen();
-    screen->initialize(window, true);
+    screen->initialize(window, true, false);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);

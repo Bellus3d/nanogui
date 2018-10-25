@@ -118,6 +118,12 @@ public:
     //! If the numerator and denominator is set to zero then the aspect ratio limit is disabled.
     virtual void setAspectRatio(int numerator, int denominator);
 
+    //! Enables or disables fullscreen mode.
+    virtual void setFullscreen(bool fullscreen);
+
+    //! Returns whether window is in fullscreen mode.
+    virtual bool isFullscreen() const;
+
     /// Draw the Screen contents
     virtual void drawAll();
 
@@ -180,7 +186,7 @@ public:
     Screen();
 
     /// Initialize the \ref Screen
-    void initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct);
+    void initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct, bool fullscreen);
 
     /* Event handlers */
     bool cursorPosCallbackEvent(double x, double y);
@@ -215,7 +221,8 @@ protected:
     Color mBackground;
     std::string mCaption;
     bool mShutdownGLFWOnDestruct;
-    bool mFullscreen;
+    Vector2i mPreFullscreenPos;
+    Vector2i mPreFullscreenSize;
     std::function<void(Vector2i)> mResizeCallback;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

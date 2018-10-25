@@ -119,8 +119,8 @@ static float get_pixel_ratio(GLFWwindow *window) {
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
-      mShutdownGLFWOnDestruct(false), mFullscreen(false) {
-    memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
+      mShutdownGLFWOnDestruct(false) {
+      memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
 Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
@@ -129,8 +129,8 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
-      mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
-    memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
+      mShutdownGLFWOnDestruct(false) {
+      memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
     /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
        Default value is an OpenGL 3.3 core profile context. */
@@ -149,16 +149,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
 
-    if (fullscreen) {
-        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-        mGLFWWindow = glfwCreateWindow(mode->width, mode->height,
-                                       caption.c_str(), monitor, nullptr);
-    } else {
-        mGLFWWindow = glfwCreateWindow(size.x(), size.y(),
-                                       caption.c_str(), nullptr, nullptr);
-    }
-
+    mGLFWWindow = glfwCreateWindow(size.x(), size.y(), caption.c_str(), nullptr, nullptr);
     if (!mGLFWWindow)
         throw std::runtime_error("Could not create an OpenGL " +
                                  std::to_string(glMajor) + "." +
@@ -295,10 +286,10 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-    initialize(mGLFWWindow, true);
+    initialize(mGLFWWindow, true, fullscreen);
 }
 
-void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
+void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct, bool fullscreen) {
     mGLFWWindow = window;
     mShutdownGLFWOnDestruct = shutdownGLFWOnDestruct;
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
@@ -307,7 +298,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mPixelRatio = get_pixel_ratio(window);
 
 #if defined(_WIN32) || defined(__linux__)
-    if (mPixelRatio != 1 && !mFullscreen)
+    if (mPixelRatio != 1)
         glfwSetWindowSize(window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
 #endif
 
@@ -354,6 +345,10 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     /// Fixes retina display-related font rendering issue (#185)
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
     nvgEndFrame(mNVGContext);
+
+    if (fullscreen) {
+      setFullscreen(true);
+    }
 }
 
 Screen::~Screen() {
@@ -424,6 +419,58 @@ void Screen::setAspectRatio(int numerator, int denominator)
     (numerator ? numerator : GLFW_DONT_CARE),
     (denominator ? denominator : GLFW_DONT_CARE)
   );
+}
+
+void Screen::setFullscreen(bool fullscreen)
+{
+  if (fullscreen != isFullscreen()) {
+    if (fullscreen) {
+      glfwGetWindowPos(mGLFWWindow, &mPreFullscreenPos[0], &mPreFullscreenPos[1]);
+      glfwGetWindowSize(mGLFWWindow, &mPreFullscreenSize[0], &mPreFullscreenSize[1]);
+    }
+
+    GLFWmonitor* bestMonitor = NULL;
+    {
+      int bestOverlap = 0;
+      int monitorsCount = 0;
+
+      const auto monitors = glfwGetMonitors(&monitorsCount);
+      for (auto monitorIndex = 0; monitorIndex < monitorsCount; monitorIndex++) {
+        const auto monitor = monitors[monitorIndex];
+
+        const auto mode = glfwGetVideoMode(monitor);
+        Vector2i monitorSize{ mode->width, mode->height };
+
+        Vector2i monitorPos{ 0, 0 };
+        glfwGetMonitorPos(monitor, &monitorPos[0], &monitorPos[1]);
+
+        const auto overlap =
+          std::max(0, std::min(mPreFullscreenPos.x() + mPreFullscreenSize.x(), monitorPos.x() + monitorSize.x()) - std::max(mPreFullscreenPos.x(), monitorPos.x())) *
+          std::max(0, std::min(mPreFullscreenPos.y() + mPreFullscreenSize.y(), monitorPos.y() + monitorSize.y()) - std::max(mPreFullscreenPos.y(), monitorPos.y()));
+
+        if (bestOverlap < overlap) {
+          bestOverlap = overlap;
+          bestMonitor = monitor;
+        }
+      }
+
+      if (!bestMonitor) {
+        bestMonitor = glfwGetPrimaryMonitor();
+      }
+    }
+
+    auto mode = glfwGetVideoMode(bestMonitor);
+    if (fullscreen) {
+      glfwSetWindowMonitor(mGLFWWindow, bestMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    } else {
+      glfwSetWindowMonitor(mGLFWWindow, NULL, mPreFullscreenPos.x(), mPreFullscreenPos.y(),
+        mPreFullscreenSize.x(), mPreFullscreenSize.y(), mode->refreshRate);
+    }
+  }
+}
+
+bool Screen::isFullscreen() const {
+  return NULL != glfwGetWindowMonitor(mGLFWWindow);
 }
 
 void Screen::drawAll() {
