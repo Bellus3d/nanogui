@@ -503,7 +503,7 @@ bool TextBox::checkFormat(const std::string &input, const std::string &format) {
         std::regex regex(format);
         return regex_match(input, regex);
     } catch (const std::regex_error &) {
-#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 9)
+#if defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 9))
         std::cerr << "Warning: cannot validate text field due to lacking regular expression support. please compile with GCC >= 4.9" << std::endl;
         return true;
 #else
