@@ -53,7 +53,7 @@ NAMESPACE_END(detail)
  * ``nanogui/serializer/opengl.h``, and ``nanogui/serializer/sparse.h`` must
  * be included to serialize the respective data types.
  */
-class Serializer {
+class NANOGUI_EXPORT Serializer {
 protected:
 // this friendship breaks the documentation
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -303,7 +303,7 @@ struct serialization_helper<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, 
 
     static void write(Serializer &s, const Matrix *value, size_t count) {
         for (size_t i = 0; i<count; ++i) {
-            uint32_t rows = value->rows(), cols = value->cols();
+            auto rows = value->rows(), cols = value->cols();
             s.write(&rows, sizeof(uint32_t));
             s.write(&cols, sizeof(uint32_t));
             serialization_helper<Scalar>::write(s, value->data(), rows*cols);
