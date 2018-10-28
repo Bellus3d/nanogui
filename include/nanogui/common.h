@@ -460,6 +460,18 @@ extern NANOGUI_EXPORT void leave();
 /// Return whether or not a main loop is currently active
 extern NANOGUI_EXPORT bool active();
 
+/// Returns the value of the timer.
+extern NANOGUI_EXPORT double getTime();
+
+/// Sets the value of the timer.
+extern NANOGUI_EXPORT void setTime(double time);
+
+/// Returns the current value of the raw timer.
+extern NANOGUI_EXPORT uint64_t getTimerValue();
+
+/// Returns the frequency, in Hz, of the raw timer.
+extern NANOGUI_EXPORT uint64_t getTimerFrequency();
+
 /**
  * \brief Open a native file open/save dialog.
  *
