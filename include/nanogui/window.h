@@ -31,6 +31,11 @@ public:
     /// Set the window title
     void setTitle(const std::string &title) { mTitle = title; }
 
+    /// Returns whether or not window header is hidden.
+    bool isHeaderHidden() const { return mHeaderHidden; }
+    /// Hides or shows window header.
+    void setHeaderHidden(bool mheaderHidden) { mHeaderHidden = mheaderHidden; }
+
     /// Is this a model dialog?
     bool modal() const { return mModal; }
     /// Set whether or not this is a modal dialog
@@ -67,6 +72,7 @@ protected:
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
+    bool mHeaderHidden;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

@@ -132,6 +132,22 @@ void shutdown() {
     glfwTerminate();
 }
 
+double getTime() {
+  return glfwGetTime();
+}
+
+void setTime(double time) {
+  glfwSetTime(time);
+}
+
+uint64_t getTimerValue() {
+  return glfwGetTimerValue();
+}
+
+uint64_t getTimerFrequency() {
+  return glfwGetTimerFrequency();
+}
+
 std::array<char, 8> utf8(int c) {
     std::array<char, 8> seq;
     int n = 0;

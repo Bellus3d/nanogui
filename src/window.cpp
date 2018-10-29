@@ -19,7 +19,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false), mHeaderHidden(false) { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
@@ -92,7 +92,7 @@ void Window::draw(NVGcontext *ctx) {
     nvgFill(ctx);
     nvgRestore(ctx);
 
-    if (!mTitle.empty()) {
+    if (!mTitle.empty() && !mHeaderHidden) {
         /* Draw header */
         NVGpaint headerPaint = nvgLinearGradient(
             ctx, mPos.x(), mPos.y(), mPos.x(),
@@ -189,12 +189,14 @@ void Window::save(Serializer &s) const {
     Widget::save(s);
     s.set("title", mTitle);
     s.set("modal", mModal);
+    s.set("headerHidden", mHeaderHidden);
 }
 
 bool Window::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("title", mTitle)) return false;
     if (!s.get("modal", mModal)) return false;
+    if (!s.get("headerHidden", mHeaderHidden)) return false;
     mDrag = false;
     return true;
 }
