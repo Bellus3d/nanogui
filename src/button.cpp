@@ -175,7 +175,7 @@ void Button::draw(NVGcontext *ctx) {
             iw = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
         } else {
             int w, h;
-            ih *= 0.9f;
+            //ih *= 0.9f;
             nvgImageSize(ctx, mIcon, &w, &h);
             iw = w * ih / h;
         }
