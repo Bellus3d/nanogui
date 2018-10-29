@@ -287,7 +287,7 @@ void ImageView::draw(NVGcontext* ctx) {
     Widget::draw(ctx);
     nvgEndFrame(ctx); // Flush the NanoVG draw stack, not necessary to call nvgBeginFrame afterwards.
 
-    drawImageBorder(ctx);
+    //drawImageBorder(ctx);
 
     // Calculate several variables that need to be send to OpenGL in order for the image to be
     // properly displayed inside the widget.
