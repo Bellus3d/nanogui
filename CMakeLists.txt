@@ -399,7 +399,6 @@ if (NANOGUI_INSTALL)
     LIBRARY DESTINATION lib/Release
     ARCHIVE DESTINATION lib/Release)
 
-  install(FILES $<TARGET_PDB_FILE:nanogui> DESTINATION bin/Debug OPTIONAL CONFIGURATIONS Debug)
   install(DIRECTORY include/nanogui DESTINATION include FILES_MATCHING PATTERN "*.h")
 endif()
 
