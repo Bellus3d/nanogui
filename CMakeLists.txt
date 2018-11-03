@@ -389,12 +389,18 @@ if (NANOGUI_BUILD_SHARED)
 endif()
 
 if (NANOGUI_INSTALL)
-  install(TARGETS nanogui
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib)
+  install(TARGETS nanogui CONFIGURATIONS Debug
+    RUNTIME DESTINATION bin/Debug
+    LIBRARY DESTINATION lib/Debug
+    ARCHIVE DESTINATION lib/Debug)
 
-  install(DIRECTORY include/nanogui DESTINATION include
-          FILES_MATCHING PATTERN "*.h")
+  install(TARGETS nanogui CONFIGURATIONS Release
+    RUNTIME DESTINATION bin/Release
+    LIBRARY DESTINATION lib/Release
+    ARCHIVE DESTINATION lib/Release)
+
+  install(FILES $<TARGET_PDB_FILE:nanogui> DESTINATION bin/Debug OPTIONAL CONFIGURATIONS Debug)
+  install(DIRECTORY include/nanogui DESTINATION include FILES_MATCHING PATTERN "*.h")
 endif()
 
 if (NANOGUI_BUILD_SHARED)
