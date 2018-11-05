@@ -389,20 +389,13 @@ if (NANOGUI_BUILD_SHARED)
 endif()
 
 if (NANOGUI_INSTALL)
-  install(TARGETS nanogui CONFIGURATIONS Debug
-    RUNTIME DESTINATION bin/Debug COMPONENT Runtime
-    LIBRARY DESTINATION lib/Debug COMPONENT Development
-    ARCHIVE DESTINATION lib/Debug COMPONENT Development
+  install(TARGETS nanogui
+    RUNTIME DESTINATION bin COMPONENT Runtime
+    LIBRARY DESTINATION lib COMPONENT Development
+    ARCHIVE DESTINATION lib COMPONENT Development
   )
 
-  install(TARGETS nanogui CONFIGURATIONS Release
-    RUNTIME DESTINATION bin/Release COMPONENT Runtime
-    LIBRARY DESTINATION lib/Release COMPONENT Development
-    ARCHIVE DESTINATION lib/Release COMPONENT Development
-  )
-
-  install(FILES $<TARGET_PDB_FILE:nanogui> CONFIGURATIONS Debug DESTINATION bin/Debug COMPONENT Development OPTIONAL)
-  install(FILES $<TARGET_PDB_FILE:nanogui> CONFIGURATIONS Release DESTINATION bin/Release COMPONENT Development OPTIONAL)
+  install(FILES $<TARGET_PDB_FILE:nanogui> DESTINATION bin COMPONENT Development OPTIONAL)
   install(DIRECTORY include/nanogui DESTINATION include COMPONENT Development FILES_MATCHING PATTERN "*.h")
 endif()
 
