@@ -28,6 +28,7 @@ option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 option(NANOGUI_USE_GLAD      "Use Glad OpenGL loader library?" ${NANOGUI_USE_GLAD_DEFAULT})
 option(NANOGUI_INSTALL       "Install NanoGUI on `make install`?" ON)
+option(NANOGUI_INSTALL_RUNTIME_ONLY "Install only NanoGUI files required on runtime." OFF)
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
@@ -389,14 +390,23 @@ if (NANOGUI_BUILD_SHARED)
 endif()
 
 if (NANOGUI_INSTALL)
-  install(TARGETS nanogui
-    RUNTIME DESTINATION bin COMPONENT Runtime
-    LIBRARY DESTINATION lib COMPONENT Development
-    ARCHIVE DESTINATION lib COMPONENT Development
-  )
+  if (NANOGUI_INSTALL_RUNTIME_ONLY)
+    install(TARGETS nanogui RUNTIME DESTINATION Debug/bin CONFIGURATIONS Debug)
+    install(TARGETS nanogui RUNTIME DESTINATION Release/bin CONFIGURATIONS Release)
+  else()
+    install(TARGETS nanogui CONFIGURATIONS Debug
+      RUNTIME DESTINATION Debug/bin 
+      LIBRARY DESTINATION Debug/lib 
+      ARCHIVE DESTINATION Debug/lib)
 
-  install(FILES $<TARGET_PDB_FILE:nanogui> DESTINATION bin COMPONENT Development OPTIONAL)
-  install(DIRECTORY include/nanogui DESTINATION include COMPONENT Development FILES_MATCHING PATTERN "*.h")
+    install(TARGETS nanogui CONFIGURATIONS Release
+      RUNTIME DESTINATION Release/bin 
+      LIBRARY DESTINATION Release/lib 
+      ARCHIVE DESTINATION Release/lib)
+
+    install(DIRECTORY include/nanogui DESTINATION Debug/include CONFIGURATIONS Debug FILES_MATCHING PATTERN "*.h")
+    install(DIRECTORY include/nanogui DESTINATION Release/include CONFIGURATIONS Release FILES_MATCHING PATTERN "*.h")
+  endif()
 endif()
 
 if (NANOGUI_BUILD_SHARED)
