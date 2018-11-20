@@ -70,8 +70,8 @@ void CheckBox::draw(NVGcontext *ctx) {
 
     NVGpaint bg = nvgBoxGradient(ctx, mPos.x() + 1.5f, mPos.y() + 1.5f,
                                  mSize.y() - 2.0f, mSize.y() - 2.0f, 3, 3,
-                                 mPushed ? Color(0, 100) : Color(0, 32),
-                                 Color(0, 0, 0, 180));
+                                 mPushed ? Color(255, 255, 255, 100) : Color(255, 255, 255, 32), // TODO: Get color from theme!
+                                 Color(255, 255, 255, 180)); // TODO: Get color from theme!
 
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x() + 1.0f, mPos.y() + 1.0f, mSize.y() - 2.0f,
