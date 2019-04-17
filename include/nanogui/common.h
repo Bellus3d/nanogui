@@ -460,6 +460,18 @@ extern NANOGUI_EXPORT void leave();
 /// Return whether or not a main loop is currently active
 extern NANOGUI_EXPORT bool active();
 
+/// Returns the value of the timer.
+extern NANOGUI_EXPORT double getTime();
+
+/// Sets the value of the timer.
+extern NANOGUI_EXPORT void setTime(double time);
+
+/// Returns the current value of the raw timer.
+extern NANOGUI_EXPORT uint64_t getTimerValue();
+
+/// Returns the frequency, in Hz, of the raw timer.
+extern NANOGUI_EXPORT uint64_t getTimerFrequency();
+
 /**
  * \brief Open a native file open/save dialog.
  *
@@ -520,6 +532,10 @@ extern NANOGUI_EXPORT std::array<char, 8> utf8(int c);
 /// Load a directory of PNG images and upload them to the GPU (suitable for use with ImagePanel)
 extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
     loadImageDirectory(NVGcontext *ctx, const std::string &path);
+
+/// Load a directory of PNG images and upload them to the GPU (suitable for use with ImagePanel)
+extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
+loadBellus3DOutputDirectory(NVGcontext *ctx, const std::string &path);
 
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
 #define nvgImageIcon(ctx, name) nanogui::__nanogui_get_image(ctx, #name, name##_png, name##_png_size)

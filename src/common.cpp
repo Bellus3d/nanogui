@@ -132,6 +132,22 @@ void shutdown() {
     glfwTerminate();
 }
 
+double getTime() {
+  return glfwGetTime();
+}
+
+void setTime(double time) {
+  glfwSetTime(time);
+}
+
+uint64_t getTimerValue() {
+  return glfwGetTimerValue();
+}
+
+uint64_t getTimerFrequency() {
+  return glfwGetTimerFrequency();
+}
+
 std::array<char, 8> utf8(int c) {
     std::array<char, 8> seq;
     int n = 0;
@@ -180,13 +196,15 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     std::string searchPath = path + "/*.*";
     HANDLE handle = FindFirstFileA(searchPath.c_str(), &ffd);
     if (handle == INVALID_HANDLE_VALUE)
-        throw std::runtime_error("Could not open image directory!");
+        throw std::runtime_error("Could not open image directory! path: "+path);
     do {
         const char *fname = ffd.cFileName;
 #endif
         if (strstr(fname, "png") == nullptr)
             continue;
         std::string fullName = path + "/" + std::string(fname);
+        //std::cout << "fullName: " << fullName << std::endl;
+
         int img = nvgCreateImage(ctx, fullName.c_str(), 0);
         if (img == 0)
             throw std::runtime_error("Could not open image data!");
@@ -199,6 +217,68 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     } while (FindNextFileA(handle, &ffd) != 0);
     FindClose(handle);
 #endif
+    return result;
+}
+
+bool isDirectory(std::string const& dir_path)
+{
+    DWORD const f_attrib = GetFileAttributesA(dir_path.c_str());
+    return f_attrib != INVALID_FILE_ATTRIBUTES &&
+        (f_attrib & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+bool fileExists(const std::string& name) {
+    struct stat buffer;
+    return (stat(name.c_str(), &buffer) == 0);
+}
+
+std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext * ctx, const std::string & path)
+{
+    std::vector<std::pair<int, std::string> > result;
+    WIN32_FIND_DATA ffd;
+    std::string searchPath = path + "/*";
+    std::cout << "searchPath: " << searchPath << std::endl;
+
+    HANDLE handle = FindFirstFile(searchPath.c_str(), &ffd);
+    if (handle == INVALID_HANDLE_VALUE)
+        throw std::runtime_error("Could not open output directory! path: " + path);
+    do {
+        const char *fname = ffd.cFileName;
+        std::string fullName = path + "/" + std::string(fname);
+
+        std::string b3eFilePath = fullName + "/head3d.b3e";
+        std::string fullNameHD = fullName + "/Output_hd";
+        std::string fullNameSD = fullName + "/Output_sd";
+        std::string fullNameLD = fullName + "/Output_ld";
+        
+        if (!fileExists(b3eFilePath)) {
+            continue;
+        }
+
+        if(isDirectory(fullNameHD)) {
+            fullName = fullNameHD+"/C_00001.jpg";
+        }
+        else if (isDirectory(fullNameSD)) {
+            fullName = fullNameSD + "/C_00001.jpg";
+        }
+        else if (isDirectory(fullNameLD)) {
+            fullName = fullNameLD + "/C_00001.jpg";
+        }
+        else {
+            continue;
+        }
+
+        if (!fileExists(fullName)) {
+            continue;
+        }
+
+        int img = nvgCreateImage(ctx, fullName.c_str(), 0);
+        if (img == 0)
+            throw std::runtime_error("Could not open image data!");
+        result.push_back(
+            std::make_pair(img, fullName.substr(0, fullName.length() - 4)));
+    } while (FindNextFileA(handle, &ffd) != 0);
+    FindClose(handle);
     return result;
 }
 
