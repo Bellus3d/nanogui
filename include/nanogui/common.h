@@ -533,9 +533,10 @@ extern NANOGUI_EXPORT std::array<char, 8> utf8(int c);
 extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
     loadImageDirectory(NVGcontext *ctx, const std::string &path);
 
-/// Load a directory of PNG images and upload them to the GPU (suitable for use with ImagePanel)
+/// Load a directory of JPG images and upload them to the GPU (suitable for use with ImagePanel)
+/// requiredFileType is "obj" or "ply" and so on, used to filter qualified dataset
 extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
-loadBellus3DOutputDirectory(NVGcontext *ctx, const std::string &path);
+loadBellus3DOutputDirectory(NVGcontext *ctx, const std::string &path, const std::string & requiredFileType);
 
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
 #define nvgImageIcon(ctx, name) nanogui::__nanogui_get_image(ctx, #name, name##_png, name##_png_size)

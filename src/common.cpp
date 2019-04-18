@@ -232,7 +232,7 @@ bool fileExists(const std::string& name) {
     return (stat(name.c_str(), &buffer) == 0);
 }
 
-std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext * ctx, const std::string & path)
+std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext * ctx, const std::string & path, const std::string & requiredFileType)
 {
     std::vector<std::pair<int, std::string> > result;
     WIN32_FIND_DATA ffd;
@@ -245,38 +245,44 @@ std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext 
     do {
         const char *fname = ffd.cFileName;
         std::string fullName = path + "/" + std::string(fname);
-
         std::string b3eFilePath = fullName + "/head3d.b3e";
         std::string fullNameHD = fullName + "/Output_hd";
         std::string fullNameSD = fullName + "/Output_sd";
         std::string fullNameLD = fullName + "/Output_ld";
-        
         if (!fileExists(b3eFilePath)) {
             continue;
         }
 
         if(isDirectory(fullNameHD)) {
-            fullName = fullNameHD+"/C_00001.jpg";
+            fullName = fullNameHD;
         }
         else if (isDirectory(fullNameSD)) {
-            fullName = fullNameSD + "/C_00001.jpg";
+            fullName = fullNameSD;
         }
         else if (isDirectory(fullNameLD)) {
-            fullName = fullNameLD + "/C_00001.jpg";
+            fullName = fullNameLD;
         }
         else {
             continue;
         }
+        std::string jpgFilePath = fullName + "/C_00001.jpg";
 
-        if (!fileExists(fullName)) {
+        if (!fileExists(jpgFilePath)) {
             continue;
         }
+        
+        if (requiredFileType != "") {
+            std::string requiredFilePath = fullName + "/head3d." + requiredFileType;
+            if (!fileExists(requiredFilePath)) {
+                continue;
+            }
+        }
 
-        int img = nvgCreateImage(ctx, fullName.c_str(), 0);
+        int img = nvgCreateImage(ctx, jpgFilePath.c_str(), 0);
         if (img == 0)
             throw std::runtime_error("Could not open image data!");
         result.push_back(
-            std::make_pair(img, fullName.substr(0, fullName.length() - 4)));
+            std::make_pair(img, jpgFilePath.substr(0, jpgFilePath.length() - 4)));
     } while (FindNextFileA(handle, &ffd) != 0);
     FindClose(handle);
     return result;
