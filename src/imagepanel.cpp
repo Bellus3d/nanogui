@@ -68,7 +68,9 @@ void ImagePanel::draw(NVGcontext* ctx) {
         Vector2i p = mPos + Vector2i::Constant(mMargin) +
             Vector2i((int) i % grid.x(), (int) i / grid.x()) * (mThumbSize + mSpacing);
         int imgw, imgh;
-
+        // TODO: fix hard code substr
+        // C:/ProgramData/Bellus3D/FaceCamera/Output/2019.04.09.14.26.20/Output_hd/C_00001
+        std::string folderName = mImages[i].second.substr(42, 19);
         nvgImageSize(ctx, mImages[i].first, &imgw, &imgh);
         float iw, ih, ix, iy;
         if (imgw < imgh) {
@@ -107,6 +109,11 @@ void ImagePanel::draw(NVGcontext* ctx) {
         nvgStrokeWidth(ctx, 1.0f);
         nvgStrokeColor(ctx, nvgRGBA(255,255,255,80));
         nvgStroke(ctx);
+
+        nvgFontFace(ctx, "sans");
+        nvgFontSize(ctx, mThumbSize/7);
+        nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+        nvgText(ctx, p.x(), p.y() + mThumbSize+ mThumbSize / 7, folderName.c_str(), nullptr);
     }
 }
 

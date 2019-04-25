@@ -96,7 +96,7 @@ public:
 protected:
     bool checkFormat(const std::string& input,const std::string& format);
     bool copySelection();
-    void pasteFromClipboard();
+    const char* pasteFromClipboard();
     bool deleteSelection();
 
     void updateCursor(NVGcontext *ctx, float lastx,
