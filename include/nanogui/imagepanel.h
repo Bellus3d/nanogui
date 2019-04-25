@@ -28,7 +28,14 @@ public:
 public:
     ImagePanel(Widget *parent);
 
-    void setImages(const Images &data) { mImages = data; }
+    void setThumbSize(const int size) { mThumbSize = size; }
+    const int getThumbSize() const { return mThumbSize; }    
+    void setSpacing(const int spacing) { mSpacing = spacing; }
+    const int getSpacing() const { return mSpacing; }
+    void setMargin(const int margin) { mMargin = margin; }
+    const int getMargin() const { return mMargin; }
+	
+	void setImages(const Images &data) { mImages = data; }
     const Images& images() const { return mImages; }
 
     std::function<void(int)> callback() const { return mCallback; }
