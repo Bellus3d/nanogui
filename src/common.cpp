@@ -202,7 +202,7 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
 #endif
         if (strstr(fname, "png") == nullptr)
             continue;
-        std::string fullName = path + "/" + std::string(fname);
+        std::string fullName = path + "\\" + std::string(fname);
         //std::cout << "fullName: " << fullName << std::endl;
 
         int img = nvgCreateImage(ctx, fullName.c_str(), 0);
@@ -236,7 +236,7 @@ std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext 
 {
     std::vector<std::pair<int, std::string> > result;
     WIN32_FIND_DATA ffd;
-    std::string searchPath = path + "/*";
+    std::string searchPath = path + "\\*";
     std::cout << "searchPath: " << searchPath << std::endl;
 
     HANDLE handle = FindFirstFile(searchPath.c_str(), &ffd);
@@ -244,11 +244,11 @@ std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext 
         throw std::runtime_error("Could not open output directory! path: " + path);
     do {
         const char *fname = ffd.cFileName;
-        std::string fullName = path + "/" + std::string(fname);
-        std::string b3eFilePath = fullName + "/head3d.b3e";
-        std::string fullNameHD = fullName + "/Output_hd";
-        std::string fullNameSD = fullName + "/Output_sd";
-        std::string fullNameLD = fullName + "/Output_ld";
+        std::string fullName = path + "\\" + std::string(fname);
+        std::string b3eFilePath = fullName + "\\head3d.b3e";
+        std::string fullNameHD = fullName + "\\Output_hd";
+        std::string fullNameSD = fullName + "\\Output_sd";
+        std::string fullNameLD = fullName + "\\Output_ld";
         if (!fileExists(b3eFilePath)) {
             continue;
         }
@@ -265,14 +265,14 @@ std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext 
         else {
             continue;
         }
-        std::string jpgFilePath = fullName + "/C_00001.jpg";
+        std::string jpgFilePath = fullName + "\\C_00001.jpg";
 
         if (!fileExists(jpgFilePath)) {
             continue;
         }
         
         if (requiredFileType != "") {
-            std::string requiredFilePath = fullName + "/head3d." + requiredFileType;
+            std::string requiredFilePath = fullName + "\\head3d." + requiredFileType;
             if (!fileExists(requiredFilePath)) {
                 continue;
             }
@@ -286,6 +286,48 @@ std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext 
     } while (FindNextFileA(handle, &ffd) != 0);
     FindClose(handle);
     return result;
+}
+
+void appendToBellus3DOutputDirectory(NVGcontext * ctx, const std::string & dataSetPath, const std::string & requiredFileType, std::vector<std::pair<int, std::string>>& imagePathList)
+{
+	std::string fullName = dataSetPath;
+	std::string b3eFilePath = fullName + "\\head3d.b3e";
+	std::string fullNameHD = fullName + "\\Output_hd";
+	std::string fullNameSD = fullName + "\\Output_sd";
+	std::string fullNameLD = fullName + "\\Output_ld";
+	if (!fileExists(b3eFilePath)) {
+		return;
+	}
+
+	if (isDirectory(fullNameHD)) {
+		fullName = fullNameHD;
+	}
+	else if (isDirectory(fullNameSD)) {
+		fullName = fullNameSD;
+	}
+	else if (isDirectory(fullNameLD)) {
+		fullName = fullNameLD;
+	}
+	else {
+		return;
+	}
+	std::string jpgFilePath = fullName + "\\C_00001.jpg";
+
+	if (!fileExists(jpgFilePath)) {
+		return;
+	}
+
+	if (requiredFileType != "") {
+		std::string requiredFilePath = fullName + "\\head3d." + requiredFileType;
+		if (!fileExists(requiredFilePath)) {
+			return;
+		}
+	}
+
+	int img = nvgCreateImage(ctx, jpgFilePath.c_str(), 0);
+	if (img == 0)
+		throw std::runtime_error("Could not open image data!");
+	imagePathList.insert(imagePathList.begin(), std::make_pair(img, jpgFilePath.substr(0, jpgFilePath.length() - 4)));
 }
 
 std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {

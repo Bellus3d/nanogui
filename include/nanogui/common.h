@@ -538,6 +538,10 @@ extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
 extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
 loadBellus3DOutputDirectory(NVGcontext *ctx, const std::string &path, const std::string & requiredFileType);
 
+extern NANOGUI_EXPORT void
+appendToBellus3DOutputDirectory(NVGcontext * ctx, const std::string & dataSetPath, 
+	const std::string & requiredFileType, std::vector<std::pair<int, std::string>>& imagePathList);
+
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
 #define nvgImageIcon(ctx, name) nanogui::__nanogui_get_image(ctx, #name, name##_png, name##_png_size)
 
