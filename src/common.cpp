@@ -240,8 +240,9 @@ std::vector<std::pair<int, std::string>> loadBellus3DOutputDirectory(NVGcontext 
     std::cout << "searchPath: " << searchPath << std::endl;
 
     HANDLE handle = FindFirstFile(searchPath.c_str(), &ffd);
-    if (handle == INVALID_HANDLE_VALUE)
-        throw std::runtime_error("Could not open output directory! path: " + path);
+    if (handle == INVALID_HANDLE_VALUE) {
+      std::cout << "Could not open output directory! path: " + path <<std::endl;
+    }
     do {
         const char *fname = ffd.cFileName;
         std::string fullName = path + "\\" + std::string(fname);
