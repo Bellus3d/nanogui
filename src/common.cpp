@@ -27,7 +27,6 @@
 #  include <sys/dir.h>
 #endif
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 NAMESPACE_BEGIN(nanogui)
