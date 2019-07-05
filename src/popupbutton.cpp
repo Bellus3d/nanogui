@@ -73,7 +73,7 @@ void PopupButton::performLayout(NVGcontext *ctx) {
 
     const Window *parentWindow = window();
 
-    int posY = absolutePosition().y() - parentWindow->position().y() + mSize.y() /2;
+    int posY = mSize.y() /2;
     if (mPopup->side() == Popup::Right)
         mPopup->setAnchorPos(Vector2i(parentWindow->width() + 15, posY));
     else
