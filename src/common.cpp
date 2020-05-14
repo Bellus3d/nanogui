@@ -408,7 +408,10 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
 
     size_t i = 0;
     std::vector<std::string> result;
-    while (tmp[i] != '\0') {
+    auto tmpWString = std::wstring(tmp);
+    result.emplace_back(std::string(tmpWString.begin(), tmpWString.end()));
+    // comment out following code to solve the Russian character converting issue
+    /*while (tmp[i] != '\0') {
         std::string filename;
         int tmpSize = (int)wcslen(&tmp[i]);
         if (tmpSize > 0) {
@@ -426,7 +429,7 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
             result[i] = result[0] + "\\" + result[i];
         }
         result.erase(begin(result));
-    }
+    }*/
 
     return result;
 #else
